@@ -105,27 +105,25 @@ public class DeployService {
     private static void createArquivoKubernetesCompleto(String workspace, String image, String port, String appPath, TipoDeploy tipoDeploy) throws IOException {
         System.out.println("criando arquivo de deploy completo");
         String fileContent = readFileToString(ARQUIVO_COMPLETO_TEMPLATE);
+        fileContent = fileContent.replace("{{annotations}}", getAnnotations(tipoDeploy));
         fileContent = fileContent.replace("{{path}}", appPath);
         fileContent = fileContent.replace("{{image}}", image);
         fileContent = fileContent.replace("{{port}}", port);
-        fileContent = fileContent.replace("{{annotations}}", getAnnotations(tipoDeploy));
         fileContent = fileContent.replace("{{targetPort}}", tipoDeploy == TipoDeploy.REACT ? "3000" : "8080");
 
         escreverNoArquivo(workspace + "/k8s/complete-deployment.yaml", fileContent, true);
     }
 
     private static String getAnnotations(TipoDeploy tipoDeploy) {
+        StringBuilder stringBuilder = new StringBuilder();
         if (TipoDeploy.SPRING.equals(tipoDeploy)) {
-            return """
-                    nginx.ingress.kubernetes.io/x-forwarded-prefix: "/{{path}}"
-                    nginx.ingress.kubernetes.io/rewrite-target: /$2
-                    nginx.ingress.kubernetes.io/enable-cors: "true"
-                                    """;
+            stringBuilder.append("    nginx.ingress.kubernetes.io/x-forwarded-prefix: \"/{{path}}\"\n");
+            stringBuilder.append("    nginx.ingress.kubernetes.io/rewrite-target: /$2\n");
+            stringBuilder.append("    nginx.ingress.kubernetes.io/enable-cors: \"true\"\n");
         } else {
-            return """
-                    nginx.ingress.kubernetes.io/rewrite-target: /$2
-                                    """;
+            stringBuilder.append("    nginx.ingress.kubernetes.io/rewrite-target: /$2\n");
         }
+        return stringBuilder.toString();
     }
 
     private static String readFileToString(String file) throws IOException {
