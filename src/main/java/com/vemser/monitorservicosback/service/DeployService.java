@@ -32,7 +32,7 @@ public class DeployService {
                 aplicacaoDTO.getPorta().toString(),
                 aplicacaoDTO.getCaminhoApp(),
                 aplicacaoCreateDTO.getTipoDeploy() == TipoDeploy.REACT ? "3000" : "8080");
-        ExecutarSh.executarDeployKub(aplicacaoDTO.getImagemDocker(), aplicacaoCreateDTO.getWorkspace());
+//        ExecutarSh.executarDeployKub(aplicacaoDTO.getImagemDocker(), aplicacaoCreateDTO.getWorkspace());
 
         return aplicacaoDTO;
     }
