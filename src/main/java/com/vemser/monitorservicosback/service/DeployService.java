@@ -45,7 +45,7 @@ public class DeployService {
         builder.append("Logs da app: " + aplicacaoDTO.getLog() + "\n");
         builder.append("================================");
         builder.append("\n\n");
-        return IOUtils.toString(new URL(builder.toString()), StandardCharsets.UTF_8);
+        return builder.toString();
     }
 
     public void copiarDockerfileSpringBoot(String workspace, String javaOpts, String appPath) throws IOException {
