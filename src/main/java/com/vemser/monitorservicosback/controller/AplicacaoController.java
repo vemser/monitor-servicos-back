@@ -28,7 +28,7 @@ public class AplicacaoController {
     }
 
     @PostMapping("/deploy")
-    public AplicacaoDTO executarDeployKub(@RequestBody AplicacaoCreateDTO aplicacaoCreateDTO) throws IOException, InterruptedException {
+    public String executarDeployKub(@RequestBody AplicacaoCreateDTO aplicacaoCreateDTO) throws IOException, InterruptedException {
         log.info("{}", aplicacaoCreateDTO);
         return deployService.executarDeploy(aplicacaoCreateDTO);
     }

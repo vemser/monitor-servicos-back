@@ -64,7 +64,7 @@ public class AplicacaoService {
 
     private AplicacaoDTO getDto(AplicacaoEntity save, String urlLog, String urlDeploy) {
         AplicacaoDTO aplicacaoDTO = aplicacaoMapper.toDto(save);
-        aplicacaoDTO.setLog(urlLog + aplicacaoDTO.getCaminhoApp());
+        aplicacaoDTO.setLog(urlLog + aplicacaoDTO.getImagemDocker());
         aplicacaoDTO.setUrl(urlDeploy + aplicacaoDTO.getCaminhoApp());
         return aplicacaoDTO;
     }
