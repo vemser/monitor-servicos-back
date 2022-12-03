@@ -5,6 +5,7 @@ import com.vemser.monitorservicosback.dto.aplicacao.AplicacaoDTO;
 import com.vemser.monitorservicosback.service.AplicacaoService;
 import com.vemser.monitorservicosback.service.DeployService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @RequestMapping("/aplicacao")
 @Validated
 @RequiredArgsConstructor
+@Slf4j
 public class AplicacaoController {
 
     private final AplicacaoService aplicacaoService;
@@ -27,6 +29,7 @@ public class AplicacaoController {
 
     @PostMapping("/deploy")
     public AplicacaoDTO executarDeployKub(@RequestBody AplicacaoCreateDTO aplicacaoCreateDTO) throws IOException, InterruptedException {
+        log.info("{}", aplicacaoCreateDTO);
         return deployService.executarDeploy(aplicacaoCreateDTO);
     }
 
