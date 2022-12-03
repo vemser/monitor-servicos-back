@@ -16,9 +16,7 @@ public class DeployService {
 
     private static final String ARQUIVO_COMPLETO_TEMPLATE = "exemploCompleto.yaml";
     private static final String ARQUIVO_DOCKERFILE = "Dockerfile";
-
     private static final String ARQUIVO_DOCKERIGNORE = ".dockerignore";
-
 
     private final AplicacaoService aplicacaoService;
 
@@ -26,12 +24,8 @@ public class DeployService {
         AplicacaoDTO aplicacaoDTO = aplicacaoService.create(aplicacaoCreateDTO);
 
         switch (aplicacaoCreateDTO.getTipoDeploy()) {
-            case SPRING -> {
-                copiarDockerfileSpringBoot(aplicacaoCreateDTO.getWorkspace(), aplicacaoCreateDTO.getJavaOpts(), aplicacaoDTO.getCaminhoApp());
-            }
-            case REACT -> {
-                copiarDockerfileReact(aplicacaoCreateDTO.getWorkspace());
-            }
+            case SPRING -> copiarDockerfileSpringBoot(aplicacaoCreateDTO.getWorkspace(), aplicacaoCreateDTO.getJavaOpts(), aplicacaoDTO.getCaminhoApp());
+            case REACT -> copiarDockerfileReact(aplicacaoCreateDTO.getWorkspace());
         }
         createArquivoKubernetesCompleto(aplicacaoCreateDTO.getWorkspace(),
                 aplicacaoDTO.getImagemDocker(),

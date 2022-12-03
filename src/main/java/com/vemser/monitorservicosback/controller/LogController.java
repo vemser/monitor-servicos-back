@@ -33,13 +33,13 @@ public class LogController {
     }
 
     private String getLog(String nomeProjeto, String idPod) throws IOException {
-        String url = "http://10.0.20.80:8001/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/api/v1/log/file/default/" + idPod + "/" + nomeProjeto + "?previous=false&timestamps=false";
+        String url = "http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/api/v1/log/file/default/" + idPod + "/" + nomeProjeto + "?previous=false&timestamps=false";
         String s = IOUtils.toString(new URL(url), StandardCharsets.UTF_8);
         return s;
     }
 
     private String procurarIdPod(String nomeProjeto) throws IOException {
-        String url = "http://10.0.20.80:8001/api/v1/namespaces/default/pods?labelSelector=app=" + nomeProjeto;
+        String url = "http://localhost:8001/api/v1/namespaces/default/pods?labelSelector=app=" + nomeProjeto;
 
         String retorno = IOUtils.toString(new URL(url), StandardCharsets.UTF_8);
         Root root = new Gson().fromJson(retorno, Root.class);
