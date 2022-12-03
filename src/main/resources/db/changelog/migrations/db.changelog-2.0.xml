@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="2" author="maicon">
+        <sql dbms="oracle">
+            create table APLICACAO
+            (
+                ID_APLICACAO    int not null primary key,
+                GIT_URL         varchar2(512) not null,
+                IMAGEM_DOCKER   varchar2(512) not null,
+                PORTA           int not null,
+                CAMINHO_APP     varchar2(512) not null
+            );
+
+            CREATE SEQUENCE seq_aplicacao
+                START WITH     1
+                INCREMENT BY   1
+                NOCACHE
+             NOCYCLE;
+
+            insert into APLICACAO (ID_APLICACAO, GIT_URL, IMAGEM_DOCKER, PORTA, CAMINHO_APP)
+            values (seq_aplicacao.nextval, 'app inicial', 'app inicial', 9089, 'app inicial');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

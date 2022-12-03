@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="1" author="maicon">
+        <sql dbms="oracle">
+            create table PERMISSAO
+            (
+                ID_PERMISSAO int not null primary key,
+                DESCRICAO    varchar2(255) not null
+            );
+
+            CREATE SEQUENCE seq_permissao
+                START WITH     1
+                INCREMENT BY   1
+                NOCACHE
+             NOCYCLE;
+
+
+            create table USUARIO
+            (
+                ID_USUARIO int not null primary key,
+                NOME       varchar2(256) not null,
+                EMAIL      varchar2(256) not null,
+                SENHA      varchar2(256) not null,
+                FOTO       blob
+            );
+
+            CREATE SEQUENCE seq_usuario
+                START WITH     1
+                INCREMENT BY   1
+                NOCACHE
+             NOCYCLE;
+
+            create table USUARIO_PERMISSAO
+            (
+                ID_USUARIO int not null,
+                ID_PERMISSAO int not null,
+                PRIMARY KEY(ID_USUARIO, ID_PERMISSAO)
+            );
+
+            alter table USUARIO_PERMISSAO add constraint US_PER_US_ID_USUARIO_fk
+                    FOREIGN KEY (ID_USUARIO) REFERENCES USUARIO (ID_USUARIO);
+            alter table USUARIO_PERMISSAO add constraint US_PER_US_ID_PERMISSAO_fk
+                    FOREIGN KEY (ID_PERMISSAO) REFERENCES PERMISSAO (ID_PERMISSAO);
+
+            INSERT INTO PERMISSAO (ID_PERMISSAO, DESCRICAO) VALUES (seq_permissao.nextval, 'ADMIN');
+            INSERT INTO USUARIO (ID_USUARIO, NOME, EMAIL, SENHA, FOTO) VALUES (seq_usuario.nextval, 'Admin', 'admin@dbccompany.com.br', '$2a$10$X.AxPaR2usWOKRyUT2ZX/.k5sdTQNkSUly3AlSibvxImFrNb9ulAu', NULL);
+            INSERT INTO USUARIO_PERMISSAO(ID_PERMISSAO, ID_USUARIO) values (1, 1);
+
+        </sql>
+    </changeSet>
+</databaseChangeLog>
