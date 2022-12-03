@@ -35,7 +35,7 @@ public class AplicacaoController {
     public String executarDeployKub(@RequestBody AplicacaoCreateDTO aplicacaoCreateDTO) throws IOException, InterruptedException {
         log.info("{}", aplicacaoCreateDTO);
         String deployed = deployService.executarDeploy(aplicacaoCreateDTO);
-        return IOUtils.toString(new URL(deployed), StandardCharsets.UTF_8);
+        return deployed;
     }
 
     @GetMapping
