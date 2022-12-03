@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class DeployService {
     private static final String ARQUIVO_DOCKERIGNORE = ".dockerignore";
 
     private final AplicacaoService aplicacaoService;
+    private final ExecutarSh executarSh;
 
     public String executarDeploy(AplicacaoCreateDTO aplicacaoCreateDTO) {
         try {
@@ -34,7 +37,7 @@ public class DeployService {
                     aplicacaoDTO.getPorta().toString(),
                     aplicacaoDTO.getCaminhoApp(),
                     aplicacaoCreateDTO.getTipoDeploy());
-            ExecutarSh.executarDeployKub(aplicacaoDTO.getImagemDocker(), aplicacaoCreateDTO.getWorkspace());
+            executarSh.executarDeployKub(aplicacaoDTO.getImagemDocker(), aplicacaoCreateDTO.getWorkspace());
 
             StringBuilder builder = new StringBuilder();
             builder.append("\n\n");
@@ -45,7 +48,7 @@ public class DeployService {
             builder.append("================================");
             builder.append("\n\n");
             return builder.toString();
-        } catch (IOException | InterruptedException ex) {
+        } catch (IOException | InterruptedException | ExecutionException | TimeoutException ex) {
             ex.printStackTrace();
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
