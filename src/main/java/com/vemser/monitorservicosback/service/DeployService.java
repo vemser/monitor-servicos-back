@@ -33,7 +33,7 @@ public class DeployService {
                     aplicacaoDTO.getImagemDocker(),
                     aplicacaoDTO.getPorta().toString(),
                     aplicacaoDTO.getCaminhoApp(),
-                    aplicacaoCreateDTO.getTipoDeploy() == TipoDeploy.REACT ? "3000" : "8080");
+                    aplicacaoCreateDTO.getTipoDeploy());
             ExecutarSh.executarDeployKub(aplicacaoDTO.getImagemDocker(), aplicacaoCreateDTO.getWorkspace());
 
             StringBuilder builder = new StringBuilder();
@@ -102,15 +102,30 @@ public class DeployService {
         writer.close();
     }
 
-    private static void createArquivoKubernetesCompleto(String workspace, String image, String port, String appPath, String targetPort) throws IOException {
+    private static void createArquivoKubernetesCompleto(String workspace, String image, String port, String appPath, TipoDeploy tipoDeploy) throws IOException {
         System.out.println("criando arquivo de deploy completo");
         String fileContent = readFileToString(ARQUIVO_COMPLETO_TEMPLATE);
         fileContent = fileContent.replace("{{path}}", appPath);
         fileContent = fileContent.replace("{{image}}", image);
         fileContent = fileContent.replace("{{port}}", port);
-        fileContent = fileContent.replace("{{targetPort}}", targetPort);
+        fileContent = fileContent.replace("{{annotations}}", getAnnotations(tipoDeploy));
+        fileContent = fileContent.replace("{{targetPort}}", tipoDeploy == TipoDeploy.REACT ? "3000" : "8080");
 
         escreverNoArquivo(workspace + "/k8s/complete-deployment.yaml", fileContent, true);
+    }
+
+    private static String getAnnotations(TipoDeploy tipoDeploy) {
+        if (TipoDeploy.SPRING.equals(tipoDeploy)) {
+            return """
+                    nginx.ingress.kubernetes.io/x-forwarded-prefix: "/{{path}}"
+                    nginx.ingress.kubernetes.io/rewrite-target: /$2
+                    nginx.ingress.kubernetes.io/enable-cors: "true"
+                                    """;
+        } else {
+            return """
+                    nginx.ingress.kubernetes.io/rewrite-target: /$2
+                                    """;
+        }
     }
 
     private static String readFileToString(String file) throws IOException {

@@ -37,9 +37,7 @@ kind: Ingress
 metadata:
   name: {{image}}
   annotations:
-    nginx.ingress.kubernetes.io/x-forwarded-prefix: "/{{path}}"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/enable-cors: "true"
+{{annotations}}
   namespace: default
 spec:
   rules:
