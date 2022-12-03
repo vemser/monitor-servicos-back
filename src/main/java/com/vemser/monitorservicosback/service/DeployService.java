@@ -4,13 +4,11 @@ import com.vemser.monitorservicosback.MonitorServicosBackApplication;
 import com.vemser.monitorservicosback.dto.aplicacao.AplicacaoCreateDTO;
 import com.vemser.monitorservicosback.dto.aplicacao.AplicacaoDTO;
 import com.vemser.monitorservicosback.enums.TipoDeploy;
+import com.vemser.monitorservicosback.service.shell.ExecutarSh;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
 @Service
 @RequiredArgsConstructor
@@ -22,30 +20,38 @@ public class DeployService {
 
     private final AplicacaoService aplicacaoService;
 
-    public String executarDeploy(AplicacaoCreateDTO aplicacaoCreateDTO) throws IOException, InterruptedException {
-        AplicacaoDTO aplicacaoDTO = aplicacaoService.create(aplicacaoCreateDTO);
+    public String executarDeploy(AplicacaoCreateDTO aplicacaoCreateDTO) {
+        try {
+            AplicacaoDTO aplicacaoDTO = aplicacaoService.create(aplicacaoCreateDTO);
 
-        switch (aplicacaoCreateDTO.getTipoDeploy()) {
-            case SPRING ->
-                    copiarDockerfileSpringBoot(aplicacaoCreateDTO.getWorkspace(), aplicacaoCreateDTO.getJavaOpts(), aplicacaoDTO.getCaminhoApp());
-            case REACT -> copiarDockerfileReact(aplicacaoCreateDTO.getWorkspace());
+            switch (aplicacaoCreateDTO.getTipoDeploy()) {
+                case SPRING ->
+                        copiarDockerfileSpringBoot(aplicacaoCreateDTO.getWorkspace(), aplicacaoCreateDTO.getJavaOpts(), aplicacaoDTO.getCaminhoApp());
+                case REACT -> copiarDockerfileReact(aplicacaoCreateDTO.getWorkspace());
+            }
+            createArquivoKubernetesCompleto(aplicacaoCreateDTO.getWorkspace(),
+                    aplicacaoDTO.getImagemDocker(),
+                    aplicacaoDTO.getPorta().toString(),
+                    aplicacaoDTO.getCaminhoApp(),
+                    aplicacaoCreateDTO.getTipoDeploy() == TipoDeploy.REACT ? "3000" : "8080");
+            ExecutarSh.executarDeployKub(aplicacaoDTO.getImagemDocker(), aplicacaoCreateDTO.getWorkspace());
+
+            StringBuilder builder = new StringBuilder();
+            builder.append("\n\n");
+            builder.append("================================\n");
+            builder.append("Publicado em ");
+            builder.append(aplicacaoDTO.getUrl() + "\n");
+            builder.append("Logs da app: " + aplicacaoDTO.getLog() + "\n");
+            builder.append("================================");
+            builder.append("\n\n");
+            return builder.toString();
+        } catch (IOException | InterruptedException ex) {
+            ex.printStackTrace();
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            return "Erro ao fazer deploy: " + sw;
         }
-        createArquivoKubernetesCompleto(aplicacaoCreateDTO.getWorkspace(),
-                aplicacaoDTO.getImagemDocker(),
-                aplicacaoDTO.getPorta().toString(),
-                aplicacaoDTO.getCaminhoApp(),
-                aplicacaoCreateDTO.getTipoDeploy() == TipoDeploy.REACT ? "3000" : "8080");
-//        ExecutarSh.executarDeployKub(aplicacaoDTO.getImagemDocker(), aplicacaoCreateDTO.getWorkspace());
-
-        StringBuilder builder = new StringBuilder();
-        builder.append("\n\n");
-        builder.append("================================\n");
-        builder.append("Publicado em ");
-        builder.append(aplicacaoDTO.getUrl() + "\n");
-        builder.append("Logs da app: " + aplicacaoDTO.getLog() + "\n");
-        builder.append("================================");
-        builder.append("\n\n");
-        return builder.toString();
     }
 
     public void copiarDockerfileSpringBoot(String workspace, String javaOpts, String appPath) throws IOException {
