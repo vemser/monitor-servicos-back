@@ -124,7 +124,7 @@ public class DeployService {
         fileContent = fileContent.replace("{{path}}", appPath);
         fileContent = fileContent.replace("{{image}}", image);
         fileContent = fileContent.replace("{{port}}", port);
-        fileContent = fileContent.replace("{{targetPort}}", tipoDeploy == TipoDeploy.REACT ? "3000" : "8080");
+        fileContent = fileContent.replace("{{targetPort}}", tipoDeploy == TipoDeploy.REACT ? "80" : "8080");
 
         escreverNoArquivo(workspace + "/k8s/complete-deployment.yaml", fileContent, true);
     }
