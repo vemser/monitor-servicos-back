@@ -2,9 +2,7 @@ FROM node:alpine AS builder
 
 WORKDIR /app
 
-#COPY ./build .
-COPY . .
+COPY ./build .
 
-#ENTRYPOINT ["npx", "serve"]
-ENTRYPOINT ["npm", "start"]
+ENTRYPOINT ["npx", "serve"]
 
