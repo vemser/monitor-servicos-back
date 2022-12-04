@@ -18,6 +18,7 @@ public class DeployService {
 
     private static final String ARQUIVO_COMPLETO_TEMPLATE = "exemploCompleto.yaml";
     private static final String ARQUIVO_DOCKERFILE = "Dockerfile";
+    private static final String ARQUIVO_NGINX_CONF = "nginx.conf";
     private static final String ARQUIVO_DOCKERIGNORE = ".dockerignore";
 
     private final AplicacaoService aplicacaoService;
@@ -30,7 +31,10 @@ public class DeployService {
             switch (aplicacaoCreateDTO.getTipoDeploy()) {
                 case SPRING ->
                         copiarDockerfileSpringBoot(aplicacaoCreateDTO.getWorkspace(), aplicacaoCreateDTO.getJavaOpts(), aplicacaoDTO.getCaminhoApp());
-                case REACT -> copiarDockerfileReact(aplicacaoCreateDTO.getWorkspace());
+                case REACT -> {
+                    copiarDockerfileReact(aplicacaoCreateDTO.getWorkspace());
+                    copiarNginxConf(aplicacaoCreateDTO.getWorkspace());
+                }
             }
             createArquivoKubernetesCompleto(aplicacaoCreateDTO.getWorkspace(),
                     aplicacaoDTO.getImagemDocker(),
@@ -76,7 +80,7 @@ public class DeployService {
         escreverNoArquivo(workspace + "/Dockerfile", fileContent, false);
     }
 
-    public static void copiarDockerfileReact(String workspace) throws IOException {
+    private static void copiarDockerfileReact(String workspace) throws IOException {
         String caminho = TipoDeploy.REACT.toString().toLowerCase() + "/" + ARQUIVO_DOCKERFILE;
         System.out.println("criando arquivo dockerfile");
         String fileContent = readFileToString(caminho);
@@ -88,6 +92,14 @@ public class DeployService {
         fileContent = readFileToString(caminho);
 
         escreverNoArquivo(workspace + "/.dockerignore", fileContent, false);
+    }
+
+    private static void copiarNginxConf(String workspace) throws IOException {
+        String caminho = TipoDeploy.REACT.toString().toLowerCase() + "/" + ARQUIVO_NGINX_CONF;
+        System.out.println("criando arquivo nginx.conf");
+        String fileContent = readFileToString(caminho);
+
+        escreverNoArquivo(workspace + "/nginx.conf", fileContent, false);
     }
 
     private static void escreverNoArquivo(String path, String fileContent, boolean createParent) throws IOException {
