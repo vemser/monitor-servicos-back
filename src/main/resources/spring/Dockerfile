@@ -1,4 +1,4 @@
-FROM openjdk:18-jdk-slim
+FROM openjdk:18-jdk-alpine3.14
 COPY /target/*.jar /usr/local/lib/app.jar
 EXPOSE 8080
 ENV JAVA_OPTS="{{javaOpts}}"
